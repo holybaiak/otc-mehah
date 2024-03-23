@@ -88,7 +88,6 @@ Icons[PlayerStates.Hungry] = {
 healthInfoWindow = nil
 healthBar = nil
 manaBar = nil
-experienceBar = nil
 soulLabel = nil
 capLabel = nil
 healthTooltip = 'Your character health is %d out of %d.'
@@ -118,7 +117,7 @@ function init()
     healthInfoWindow:disableResize()
     healthBar = healthInfoWindow:recursiveGetChildById('healthBar')
     manaBar = healthInfoWindow:recursiveGetChildById('manaBar')
-    experienceBar = healthInfoWindow:recursiveGetChildById('experienceBar')
+    manaText = healthInfoWindow:recursiveGetChildById('manaText')
     soulLabel = healthInfoWindow:recursiveGetChildById('soulLabel')
     capLabel = healthInfoWindow:recursiveGetChildById('capLabel')
 
@@ -164,7 +163,6 @@ function terminate()
     healthInfoWindow = nil
     healthBar = nil
     manaBar = nil
-    experienceBar = nil
     soulLabel = nil
     capLabel = nil
 end
@@ -179,25 +177,7 @@ function toggle()
     end
 end
 
-function toggleIcon(bitChanged)
-    local content = healthInfoWindow:recursiveGetChildById('conditionPanel')
 
-    local icon = content:getChildById(Icons[bitChanged].id)
-    if icon then
-        icon:destroy()
-    else
-        icon = loadIcon(bitChanged)
-        icon:setParent(content)
-    end
-end
-
-function loadIcon(bitChanged)
-    local icon = g_ui.createWidget('ConditionWidget', content)
-    icon:setId(Icons[bitChanged].id)
-    icon:setImageSource(Icons[bitChanged].path)
-    icon:setTooltip(Icons[bitChanged].tooltip)
-    return icon
-end
 
 function online()
     healthInfoWindow:setupOnStart() -- load character window configuration
@@ -205,7 +185,6 @@ end
 
 function offline()
     healthInfoWindow:setParent(nil, true)
-    healthInfoWindow:recursiveGetChildById('conditionPanel'):destroyChildren()
 end
 
 -- hooked events
@@ -218,48 +197,18 @@ function onMiniWindowClose()
 end
 
 function onHealthChange(localPlayer, health, maxHealth)
-    healthBar:setText(health .. ' / ' .. maxHealth)
+    healthInfoWindow.texto:setText(health)
     healthBar:setTooltip(tr(healthTooltip, health, maxHealth))
     healthBar:setValue(health, 0, maxHealth)
 end
 
 function onManaChange(localPlayer, mana, maxMana)
-    manaBar:setText(mana .. ' / ' .. maxMana)
+    healthInfoWindow.texto2:setText(mana)
     manaBar:setTooltip(tr(manaTooltip, mana, maxMana))
     manaBar:setValue(mana, 0, maxMana)
 end
 
-function onLevelChange(localPlayer, value, percent)
-    experienceBar:setText(percent .. '%')
-    experienceBar:setTooltip(tr(experienceTooltip, percent, value + 1))
-    experienceBar:setPercent(percent)
-end
 
-function onSoulChange(localPlayer, soul)
-    soulLabel:setText(tr('Soul') .. ': ' .. soul)
-end
-
-function onFreeCapacityChange(player, freeCapacity)
-    capLabel:setText(tr('Cap') .. ': ' .. freeCapacity)
-end
-
-function onStatesChange(localPlayer, now, old)
-    if now == old then
-        return
-    end
-
-    local bitsChanged = bit.bxor(now, old)
-    for i = 1, 32 do
-        local pow = math.pow(2, i - 1)
-        if pow > bitsChanged then
-            break
-        end
-        local bitChanged = bit.band(bitsChanged, pow)
-        if bitChanged ~= 0 then
-            toggleIcon(bitChanged)
-        end
-    end
-end
 
 -- personalization functions
 function hideLabels()
@@ -269,11 +218,6 @@ function hideLabels()
     healthInfoWindow:setHeight(math.max(healthInfoWindow.minimizedHeight, healthInfoWindow:getHeight() - removeHeight))
 end
 
-function hideExperience()
-    local removeHeight = experienceBar:getMarginRect().height
-    experienceBar:setOn(false)
-    healthInfoWindow:setHeight(math.max(healthInfoWindow.minimizedHeight, healthInfoWindow:getHeight() - removeHeight))
-end
 
 function setHealthTooltip(tooltip)
     healthTooltip = tooltip
@@ -293,11 +237,4 @@ function setManaTooltip(tooltip)
     end
 end
 
-function setExperienceTooltip(tooltip)
-    experienceTooltip = tooltip
 
-    local localPlayer = g_game.getLocalPlayer()
-    if localPlayer then
-        experienceBar:setTooltip(tr(experienceTooltip, localPlayer:getLevelPercent(), localPlayer:getLevel() + 1))
-    end
-end

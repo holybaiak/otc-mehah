@@ -1,93 +1,78 @@
-HealthBar < ProgressBar
+HealthBar < UIProgressBar
   id: healthBar
-  background-color: #ff4444
-  anchors.top: parent.top
-  anchors.left: parent.left
-  anchors.right: parent.right
-  margin: 1
+  width: 110
+  height: 16
+  background-color: red
+  border: 1 black
+  font: verdana-11px-rounded
+  text-offset: 0 2
+  margin: 2 
 
-ManaBar < ProgressBar
+ManaBar < UIProgressBar
   id: manaBar
-  background-color: #4444ff
-  anchors.top: prev.bottom
-  anchors.left: parent.left
-  anchors.right: parent.right
-  margin: 1
-  margin-top: 3
-
-ExperienceBar < ProgressBar
-  id: experienceBar
-  background-color: #B6E866
-  anchors.top: prev.bottom
-  anchors.left: parent.left
-  anchors.right: parent.right
-  margin: 1
-  margin-top: 3
-
-SoulLabel < GameLabel
-  id: soulLabel
-  text-align: right
-  color: white
+  width: 110
+  height: 16
+  background-color: blue
+  border: 1 black
   font: verdana-11px-rounded
-  anchors.bottom: parent.bottom
-  anchors.right: parent.right
-  anchors.left: parent.horizontalCenter
-  margin-top: 5
-  margin-right: 3
-  on: true
+  text-offset: 0 2
+  margin: 2 
 
-  $!on:
-    visible: false
-    margin-top: 0
-    height: 0
-
-CapLabel < GameLabel
-  id: capLabel
-  color: white
-  font: verdana-11px-rounded
-  anchors.bottom: parent.bottom
-  anchors.left: parent.left
-  anchors.right: parent.horizontalCenter
-  margin-top: 5
-  margin-left: 3
-  on: true
-
-  $!on:
-    visible: false
-    margin-top: 0
-    height: 0
-
-ConditionWidget < UIWidget
-  size: 18 18
-
-  $!first:
-    margin-left: 2
 
 MiniWindow
   icon: /images/topbuttons/healthinfo
   id: healthInfoWindow
-  !text: tr('Health Info')
-  height: 123
+  !text: ('HealthInfo')
+  height: 80
   @onOpen: modules.game_healthinfo.onMiniWindowOpen()
   @onClose: modules.game_healthinfo.onMiniWindowClose()
   &save: true
 
   MiniWindowContents
     HealthBar
-    ManaBar
-    ExperienceBar
-    Panel
-      id: conditionPanel
-      layout:
-        type: horizontalBox
-      height: 22
-      margin-top: 4
-      padding: 2
-      anchors.top: prev.bottom
       anchors.left: parent.left
-      anchors.right: parent.right
-      border-width: 1
-      border-color: #00000077
-      background-color: #ffffff11
-    SoulLabel
-    CapLabel
+      anchors.top: parent.top
+      margin-left: 25
+      margin-top: 5
+
+    ManaBar
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 25
+      margin-top: 30
+
+  Label
+    id: texto
+    anchors.top: parent.top
+    margin-top: 28
+    margin-right: 15
+    anchors.right: parent.right
+
+  Label
+    id: texto2
+    anchors.top: parent.top
+    anchors.right: parent.right   
+    margin-top: 52
+    margin-right: 15
+
+  UIWidget
+    id: imgheal
+    image-source: /images/ui/heal
+    size: 15 15
+    anchors.top: parent.top
+    anchors.left: parent.left  
+    margin-top: 28
+    margin-left: 5
+
+  UIWidget
+    id: imgMana
+    image-source: /images/ui/mana
+    size: 17 17
+    anchors.top: parent.top
+    anchors.left: parent.left  
+    margin-top: 52
+    margin-left: 5  
+ 
+
+ 
+
